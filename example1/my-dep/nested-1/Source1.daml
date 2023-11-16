@@ -1,0 +1,4 @@
+module Source1 where
+import Source2
+a1 : Int
+a1 = 2 + a2

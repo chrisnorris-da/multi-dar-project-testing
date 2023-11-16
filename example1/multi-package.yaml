@@ -1,0 +1,12 @@
+packages:
+- ./my-dep/sub-dep/
+- ./my-dep/nested-1/
+- ./my-dep/nested-1/nested-2/nested-3/nested-4/nested-5/nested-6/
+- ./
+- ./my-dep/
+- ./my-dep/nested-1/nested-2/nested-3/nested-4/nested-5/nested-6/nested-7/nested-8/
+- ./my-dep/nested-1/nested-2/nested-3/nested-4/nested-5/
+- ./my-dep/nested-1/nested-2/nested-3/nested-4/
+- ./my-dep/nested-1/nested-2/nested-3/nested-4/nested-5/nested-6/nested-7/
+- ./my-dep/nested-1/nested-2/nested-3/
+- ./my-dep/nested-1/nested-2/

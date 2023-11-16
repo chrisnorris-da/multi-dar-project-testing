@@ -1,0 +1,9 @@
+.daml
+**/log
+navigator.log
+target/
+*.lib
+*result
+.DS_Store
+.stack-work/
+*~

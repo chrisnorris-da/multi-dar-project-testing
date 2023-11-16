@@ -1,0 +1,3 @@
+module Source8 where
+a8 : Int
+a8 = 2 + 9

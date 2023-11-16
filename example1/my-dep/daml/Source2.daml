@@ -1,0 +1,5 @@
+module Source2 where
+
+import Source
+a : Int
+a = 5 + aa
