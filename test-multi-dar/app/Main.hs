@@ -13,7 +13,7 @@ import System.IO.Error
 import System.Random
 import System.Random.Shuffle
 
-sdkVer = "2.8.0-snapshot.20231026.12262.0.vb12eb2ad"
+sdkVer = "2.9.0-rc1"
 
 main = do
     Config{..} <- execParser $ info (configParser <**> helper)
@@ -21,24 +21,27 @@ main = do
        <> progDesc "Run recursive dir dar build test" )
 
     pwd <- getCurrentDirectory
-    setCurrentDirectory "../example1/my-dep"
-    removeDirectoryRecursiveIfExists "nested-1"
+    let newScaffoldFolderName = "../" <> folderName <> "/nesting-example"
+    createDirectoryIfMissing True newScaffoldFolderName
+    setCurrentDirectory newScaffoldFolderName
+    let sourceDirName = if sourceDirectoryNameIsDaml then "daml" else "."
     forM_ [1..recursionLimit] $ \i -> do
         createDirectory' ("nested-" <> show i) >>= setCurrentDirectory
+        createDirectoryIfMissing True sourceDirName
         writeFile "daml.yaml" $ unlines $
                     [ "sdk-version: " <> sdkVer
                     , "name: nested" <> show i
                     , "version: 0.0.1"
-                    , "source: ."
+                    , ("source: " <> sourceDirName)
                     , "build-options:"
-                    , "- --target=1.15"
+                    , "- --target=1.16"
                     , "dependencies:"
                     , "- daml-prim"
                     , "- daml-stdlib"]
                     ++ if i == recursionLimit then [] else
                       ["data-dependencies:"]
                     ++ ["- ./nested-" <> show (i+1) <> darRoot <> show (i+1) <> "-0.0.1.dar"]
-        writeFile ("Source" <> show i <> ".daml") $ unlines $
+        writeFile (sourceDirName <> "/Source" <> show i <> ".daml") $ unlines $
                     [ "module Source" <> show i <> " where"]
                     ++  ["import Source" <> show (i + 1) | i /= recursionLimit]
                     ++
@@ -46,7 +49,7 @@ main = do
                     , "a" <> show i <> " = 2 + " <> if i == recursionLimit then "9" else "a" <> show (i+1)
                     ]
 
-    setCurrentDirectory $ pwd </> ".." </> "example1"
+    setCurrentDirectory $ pwd </> ".." </> folderName
     removeFileIfExists "multi-package.yaml"
     dependencies <-
                map (fst . splitFileName) . words <$> readProcess "find" [".", "-name","daml.yaml"] []
@@ -68,7 +71,19 @@ removeFileIfExists fileName = removeFile fileName `catch` handleExists
           | isDoesNotExistError e = return ()
           | otherwise = throwIO e
 
-newtype Config = Config {recursionLimit :: Int}
+data Config = Config {recursionLimit :: Int, folderName :: String,
+ sourceDirectoryNameIsDaml :: Bool}
+
+folder :: Parser String
+folder = strOption
+  (  long "folder"
+  <> short 'f'
+  <> metavar "FOLDER"
+  <> help "Scaffold output folder" )
+
+sourceDirectoryNameIsDamlP :: Parser Bool
+sourceDirectoryNameIsDamlP =
+  switch ( long "useDamlName" <> short 'u' <> help "Whether to use daml as source dir name" )
 
 configParser :: Parser Config
 configParser = Config
@@ -77,3 +92,5 @@ configParser = Config
        <> short 'd'
        <> metavar "DIRDEPTH"
        <> help "Directory depth" )
+    <*> folder
+    <*> sourceDirectoryNameIsDamlP
