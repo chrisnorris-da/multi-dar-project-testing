@@ -1,9 +1,9 @@
 ## Usage:
 From `test-multi-dar/`:
 ```bash
- stack run -- -f ex16Daml -d 16 --useDamlName
+ stack run -- -f ex16Daml -d 16 --useDamlName -s 2.9.0-rc1
 ```
-This will scaffold a project named `ex16Daml`, with nesting 16 folders deep and use daml as the source folder name (the `--useDamlName` flag). To use `.` as the name, omit the flag.
+This will scaffold a project named `ex16Daml`, with nesting 16 folders deep and use daml as the source folder name (the `--useDamlName` flag). To use `.` as the name, omit the flag. Each project uses sdk `2.9.0-rc1`.
 
 Run `stack run -- --help` for command line option detail.
 
