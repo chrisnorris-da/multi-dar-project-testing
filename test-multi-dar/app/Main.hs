@@ -13,8 +13,6 @@ import System.IO.Error
 import System.Random
 import System.Random.Shuffle
 
-sdkVer = "2.9.0-rc1"
-
 main = do
     Config{..} <- execParser $ info (configParser <**> helper)
         ( fullDesc
@@ -71,8 +69,7 @@ removeFileIfExists fileName = removeFile fileName `catch` handleExists
           | isDoesNotExistError e = return ()
           | otherwise = throwIO e
 
-data Config = Config {recursionLimit :: Int, folderName :: String,
- sourceDirectoryNameIsDaml :: Bool}
+data Config = Config {recursionLimit :: Int, folderName :: String, sourceDirectoryNameIsDaml :: Bool, sdkVer :: String}
 
 folder :: Parser String
 folder = strOption
@@ -80,6 +77,12 @@ folder = strOption
   <> short 'f'
   <> metavar "FOLDER"
   <> help "Scaffold output folder" )
+
+sdkVerP :: Parser String
+sdkVerP = strOption
+  ( long "sdkversion"
+  <> short 's'
+  <> help "Scaffold sdk version" )
 
 sourceDirectoryNameIsDamlP :: Parser Bool
 sourceDirectoryNameIsDamlP =
@@ -94,3 +97,4 @@ configParser = Config
        <> help "Directory depth" )
     <*> folder
     <*> sourceDirectoryNameIsDamlP
+    <*> sdkVerP
