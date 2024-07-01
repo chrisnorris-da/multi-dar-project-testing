@@ -1,6 +1,0 @@
-module Main where
-
-import Source2
-
-b : Int
-b = a + 2

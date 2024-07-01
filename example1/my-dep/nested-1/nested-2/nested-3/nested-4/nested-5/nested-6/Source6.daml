@@ -1,4 +1,0 @@
-module Source6 where
-import Source7
-a6 : Int
-a6 = 2 + a7
